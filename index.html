@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#170d32">
+<meta name="description" content="Restore the magical world of Lexiconia by finding words in a letter-grid adventure. Play Wordbound: The Letter Quest for free in your browser.">
+<title>Wordbound: The Letter Quest</title>
+<link rel="icon" type="image/webp" href="assets/img/logo.webp">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="scenery" aria-hidden="true"></div>
+<div class="flash" id="flash" aria-hidden="true"></div>
+<div class="trophytoast" id="tt" role="status" aria-live="polite"></div>
+
+<div id="app">
+
+  <!-- TITLE -->
+  <section id="scr-title" class="screen active">
+    <div class="corner"><button class="btn small" id="btn-full" aria-label="Toggle fullscreen">Fullscreen</button><button class="btn small" id="btn-sound" aria-label="Toggle sound">Sound: on</button></div>
+    <div class="title-wrap">
+      <div class="title-left">
+        <div class="logo">
+          <h1 class="sr-only">Wordbound: The Letter Quest</h1>
+          <img class="logo-img" id="logo-img" alt="Wordbound: The Letter Quest" draggable="false">
+          <p class="tagline">Every letter is power. Every word is hope.</p>
+        </div>
+        <nav class="menu" aria-label="Main menu">
+          <button class="btn primary" id="m-continue">Continue</button>
+          <button class="btn" id="m-new">New Game</button>
+          <button class="btn" id="m-chapters">Chapter Select</button>
+          <button class="btn" id="m-endless">Endless Mode</button>
+          <div class="menu-mini">
+            <button class="btn" id="m-inv">Inventory</button>
+            <button class="btn" id="m-shop">Shop</button>
+            <button class="btn" id="m-trophies">Trophies</button>
+            <button class="btn" id="m-how">How to Play</button>
+            <button class="btn" id="m-options">Options</button>
+            <button class="btn" id="m-credits">Credits</button>
+          </div>
+          <div class="title-status" id="title-status"></div>
+        </nav>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHAPTERS -->
+  <section id="scr-chapters" class="screen">
+    <div class="page">
+      <div class="page-top"><button class="btn small" id="ch-back">Back to menu</button><span class="tot" id="ch-total"></span></div>
+      <h2>Chapter Select</h2>
+      <div class="areas" id="areas"></div>
+    </div>
+  </section>
+
+  <!-- GAME -->
+  <section id="scr-game" class="screen">
+    <div class="game-wrap">
+      <header class="hud">
+        <div class="hud-player">
+          <div class="portrait" id="hud-portrait"></div>
+          <div class="who"><b>ARIA VALE</b><span class="hud-lv"><small id="hud-lvl">Level 1</small></span><div class="meter" title="Restoration"><i id="hud-meter"></i></div></div>
+        </div>
+        <div class="stats">
+          <div class="stat"><small>SCORE</small><b id="hud-score">0</b></div>
+          <div class="stat" id="st-moves"><small>MOVES</small><b id="hud-moves">0</b></div>
+          <div class="stat" id="st-time" style="display:none"><small>TIME</small><b id="hud-time">0:00</b></div>
+          <div class="stat"><small id="lbl-target">TARGET</small><b id="hud-target">0</b></div>
+        </div>
+        <div class="hud-actions">
+          <div class="coinchip" id="coinchip" title="Lumens"><svg viewBox="0 0 24 24"><path d="M6 3h12l4 6-10 13L2 9z"/></svg><span id="hud-coins">0</span></div>
+          <button class="iconbtn" id="btn-bag" aria-label="Inventory"><svg viewBox="0 0 24 24"><path d="M9 2h6l1 3h2.5A1.5 1.5 0 0 1 20 6.5V20a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6.5A1.5 1.5 0 0 1 5.5 5H8zm1.4 2L10 5h4l-.4-1zM8 10v2h8v-2z"/></svg></button>
+          <button class="iconbtn" id="btn-pause" aria-label="Pause"><svg viewBox="0 0 24 24"><rect x="5" y="4" width="5" height="16" rx="1.5"/><rect x="14" y="4" width="5" height="16" rx="1.5"/></svg></button>
+        </div>
+      </header>
+
+      <div class="vbar" id="vbar">
+        <div class="portrait" id="vbar-portrait"></div>
+        <div class="info"><b id="vbar-name">Veyra, Corrupted Guardian</b><div class="hp" id="vbar-hpwrap"><i id="vbar-hp"></i></div></div>
+        <div class="when" id="vbar-when"></div>
+      </div>
+
+      <div class="play">
+        <aside class="panel p-obj"><h3>Objectives</h3><div class="body"><ul class="objs" id="objs"></ul></div></aside>
+
+        <div class="board-col">
+          <div class="banner" id="banner" aria-live="polite">
+            <div><span class="lbl" id="ban-lbl">SPELL A WORD</span><span class="word idle" id="ban-word">Tap adjacent letters and press Restore, drag to spell, or type a word.</span><span class="fx" id="ban-fx"></span></div>
+            <div class="ban-right"><div class="pts" id="ban-pts"></div><div class="combo" id="combo"></div></div>
+          </div>
+          <div class="board-frame" id="frame">
+            <div class="toast" id="toast" role="status"></div>
+            <div class="board" id="board" role="group" aria-label="Letter puzzle board">
+              <svg class="chain" viewBox="0 0 6 6" preserveAspectRatio="none"><polyline id="chain-line" points=""/></svg>
+            </div>
+            <canvas id="fx" aria-hidden="true"></canvas>
+            <div class="vbubble" id="vbubble"><div class="portrait" id="vbubble-portrait"></div><span id="vbubble-text"></span></div>
+          </div>
+          <button class="btn primary restore-word" id="btn-submit-word" type="button">Restore Word <span aria-hidden="true">↵</span></button>
+          <div class="powerups" id="powerups">
+            <div class="pu-wrap"><button class="pu star" id="pu-star" aria-label="Star Surge"></button><div class="pu-label">Star Surge<br>up to 10 pts</div></div>
+            <div class="pu-wrap"><button class="pu crystal" id="pu-crystal" aria-label="Crystal Shuffle"></button><div class="pu-label">Crystal<br>shuffle and cleanse</div></div>
+            <div class="pu-wrap"><button class="pu hour" id="pu-hour" aria-label="Hourglass"></button><div class="pu-label">Hourglass<br>+3 moves</div></div>
+            <div class="pu-wrap"><button class="pu hint" id="pu-hint" aria-label="Ask Lumi for a hint"></button><div class="pu-label" id="pu-hint-lbl">Lumi hint<br>free, 5 per level</div></div>
+          </div>
+          <div class="typed-note">Tip: tap adjacent tiles one by one, then press <kbd>Restore Word</kbd> or <kbd>Enter</kbd>. You can also drag or type a word</div>
+        </div>
+
+        <aside class="panel p-words"><h3>Words Restored</h3><div class="body"><ul class="wl" id="wl"></ul></div></aside>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div id="dlg" role="dialog" aria-label="Story">
+  <button class="btn small skip" id="dlg-skip">Skip</button>
+  <div class="stage"><div class="dbox" id="dbox"><div class="portrait" id="d-portrait"></div><div><div class="nm" id="d-name"></div><div class="tx" id="d-text"></div></div><span class="next">Tap to continue</span></div></div>
+</div>
+<div id="modal"></div>
+
+<script src="js/art.js"></script>
+<script src="js/words.js"></script>
+<script src="js/game.js"></script>
+</body>
+</html>
